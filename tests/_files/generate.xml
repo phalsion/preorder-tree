@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<dataset>
+    <test_tree id="1" name="A1-1" tree_lft="1" tree_rht="2" tree_root="1" tree_lv="1" tree_pid="0"/>
+    <test_tree id="2" name="B1-1" tree_lft="1" tree_rht="2" tree_root="2" tree_lv="1" tree_pid="0"/>
+    <test_tree id="3" name="C1-1" tree_lft="1" tree_rht="2" tree_root="3" tree_lv="1" tree_pid="0"/>
+</dataset>

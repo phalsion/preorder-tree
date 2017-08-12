@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<dataset>
+    <test_tree id="1" name="A1-1" tree_lft="1" tree_rht="14" tree_root="1" tree_lv="1" tree_pid="0"/>
+    <test_tree id="3" name="C1-1" tree_lft="5" tree_rht="10" tree_root="3" tree_lv="1" tree_pid="0"/>
+    <test_tree id="4" name="A2-1" tree_lft="2" tree_rht="3" tree_root="1" tree_lv="2" tree_pid="1"/>
+    <test_tree id="5" name="A2-2" tree_lft="4" tree_rht="11" tree_root="1" tree_lv="2" tree_pid="1"/>
+    <test_tree id="6" name="A2-3" tree_lft="12" tree_rht="13" tree_root="1" tree_lv="2" tree_pid="1"/>
+    <test_tree id="10" name="C2-1" tree_lft="5" tree_rht="10" tree_root="1" tree_lv="3" tree_pid="5"/>
+    <test_tree id="11" name="C2-2" tree_lft="6" tree_rht="7" tree_root="3" tree_lv="2" tree_pid="3"/>
+    <test_tree id="12" name="C2-3" tree_lft="8" tree_rht="9" tree_root="3" tree_lv="2" tree_pid="3"/>
+    <test_tree id="13" name="C3-1(C2-1)" tree_lft="6" tree_rht="7" tree_root="1" tree_lv="4" tree_pid="10"/>
+    <test_tree id="14" name="C3-2(C2-1)" tree_lft="8" tree_rht="9" tree_root="1" tree_lv="4" tree_pid="10"/>
+</dataset>
