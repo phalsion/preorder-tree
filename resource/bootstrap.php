@@ -13,7 +13,7 @@ use Phalcon\Di\FactoryDefault\Cli as CliDI;
 
 $di = new CliDI();
 
-$di->set('db', function () {
+$di->setShared('db', function () {
     $options = [
         'host'     => 'localhost',
         'dbname'   => 'test',
