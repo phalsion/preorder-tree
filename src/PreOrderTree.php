@@ -22,7 +22,7 @@ class PreOrderTree extends Tree
     public function changeParent( $entity, $parent_entity )
     {
         $this->unlink($entity);
-        $this->addSubTree($parent_entity, $entity->refresh());
+        $this->addSubTree($parent_entity->refresh(), $entity->refresh());
 
         return true;
     }
