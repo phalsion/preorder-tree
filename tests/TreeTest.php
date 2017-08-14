@@ -12,6 +12,7 @@ namespace Tests;
 use Phalcon\Di;
 use PHPUnit\DbUnit\TestCaseTrait;
 use PHPUnit\Framework\TestCase;
+use PreOrderTree\PreOrderTree;
 use Resource\TestTree;
 
 class TreeTest extends TestCase
@@ -127,6 +128,27 @@ class TreeTest extends TestCase
         $node->save();
 
         $this->assertTrue($this->tree->addNode($root, $node));
+    }
+
+    /**
+     *
+     */
+    public function testChildren()
+    {
+        $entity   = TestTree::findFirst(10);
+        $children = $this->tree->children($entity, PreOrderTree::INCLUDE_SELF);
+        $actual   = $this->createArrayDataSet([ self::TABLE_NAME => $children->toArray() ])->getTable(self::TABLE_NAME);
+        $expect   = $this->getDataSet('children')->getTable(self::TABLE_NAME);
+        $this->assertTablesEqual($expect, $actual);
+    }
+
+    public function testToRoot()
+    {
+        $entity = TestTree::findFirst(14);
+        $roots  = $this->tree->toRoot($entity);
+        $actual = $this->createArrayDataSet([ self::TABLE_NAME => $roots->toArray() ])->getTable(self::TABLE_NAME);
+        $expect = $this->getDataSet('toRoot')->getTable(self::TABLE_NAME);
+        $this->assertTablesEqual($expect, $actual);
     }
 
     public function testAddSubTree()

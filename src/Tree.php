@@ -13,6 +13,9 @@ use Phalcon\Di\Injectable;
  */
 class Tree extends Injectable
 {
+
+    const INCLUDE_SELF = 1;
+
     private $_primary;
 
     private $_tree_lft;
@@ -105,8 +108,13 @@ class Tree extends Injectable
         return true;
     }
 
-
-    //删除子节点
+    /**
+     * 无下级节点的子节点删除
+     *
+     * @param $entity
+     *
+     * @return bool|void
+     */
     public function delete( $entity )
     {
         if ( 1 < $entity->{$this->_tree_rht} - $entity->{$this->_tree_lft} ) {
@@ -123,6 +131,84 @@ class Tree extends Injectable
         }
 
         return true;
+    }
+
+    /**
+     * 摘除子树
+     *
+     * @param $entity
+     *
+     * @return bool
+     */
+    public function unlink( $entity )
+    {
+        $offset = $this->getOffset($entity);
+        $this->setRoot($entity, null, sprintf("%+d", 1 - $entity->{$this->_tree_lv}));
+        $this->offset($entity, "-$offset");
+        $entity                     = $entity->refresh();
+        $entity->{$this->_tree_pid} = 0;
+
+        $this->persist($entity);
+
+        return true;
+    }
+
+    /**
+     * 获取子孙节点
+     *
+     * @param     $entity
+     * @param int $flag
+     *
+     * @return mixed
+     */
+    public function children( $entity, $flag = 0 )
+    {
+        $op = [ '>', '<' ];
+        if ( self::INCLUDE_SELF & $flag ) {
+            $op = [ '>=', '<=' ];
+        }
+
+        return $this->opLeftRight($entity, $op);
+    }
+
+    /**
+     * 获取指定节点到根节点路径上的所有节点信息
+     *
+     * @param     $entity
+     * @param int $flag
+     *
+     * @return \Phalcon\Mvc\Model\Resultset\Simple
+     */
+    public function toRoot( $entity, $flag = 0 )
+    {
+        $op = [ '<', '>' ];
+        if ( self::INCLUDE_SELF & $flag ) {
+            $op = [ '<=', '>=' ];
+        }
+
+        return $this->opLeftRight($entity, $op);
+    }
+
+    /**
+     * 根据左右边界进行查询
+     *
+     * @param $entity
+     * @param $op
+     *
+     * @return \Phalcon\Mvc\Model\Resultset\Simple
+     */
+    protected function opLeftRight( $entity, $op )
+    {
+        return $entity->find(
+            [
+                'conditions' => sprintf("tree_root = :tree_root: and %s%s:left: and %s%s:right:", $this->_tree_lft, $op[0], $this->_tree_rht, $op[1]),
+                'bind'       => [
+                    'left'      => $entity->{$this->_tree_lft},
+                    'right'     => $entity->{$this->_tree_rht},
+                    'tree_root' => $entity->{$this->_tree_root}
+                ]
+            ]
+        );
     }
 
 
@@ -201,9 +287,8 @@ class Tree extends Injectable
      * @param $entity 子树根节点
      * @param $offset 偏移量
      *
-     * @param $level_offset
-     *
      * @return bool|void
+     *
      */
     protected function offsetSubTree( $entity, $offset )
     {
@@ -239,20 +324,6 @@ class Tree extends Injectable
     }
 
 
-    //解除树节点的关联
-    public function unlink( $entity )
-    {
-        $offset = $this->getOffset($entity);
-        $this->setRoot($entity, null, sprintf("%+d", 1 - $entity->{$this->_tree_lv}));
-        $this->offset($entity, "-$offset");
-        $entity                     = $entity->refresh();
-        $entity->{$this->_tree_pid} = 0;
-
-        $this->persist($entity);
-
-        return true;
-    }
-
     /**
      * 合并2个树结构
      *
@@ -280,7 +351,7 @@ class Tree extends Injectable
                            {$this->_tree_lft}>=$left 
                            AND 
                            {$this->_tree_rht}<=$right";
-        $r = $this->modelsManager->executeQuery($set_root_query);
+        $r              = $this->modelsManager->executeQuery($set_root_query);
         if ( false === $r->success() ) {
             return $this->error($r);
         }
